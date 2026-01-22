@@ -52,7 +52,7 @@ class GameTable extends HookWidget {
                   spread: 8.0,
                   color: isAcceptedOpponentTable.value
                       ? Colors.green.shade300
-                      : Colors.red,
+                      : Colors.transparent,
                   child: SizedBox.expand(child: Text('test')),
                 );
               },
@@ -80,7 +80,7 @@ class GameTable extends HookWidget {
                   spread: 8.0,
                   color: isAcceptedMyTable.value
                       ? Colors.green.shade300
-                      : Colors.red,
+                      : Colors.transparent,
                   child: SizedBox.expand(child: Text('test')),
                 );
               },
