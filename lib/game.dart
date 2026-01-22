@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'models/game_card_data.dart';
 import 'ui/game_cards/game_card.dart';
+import 'ui/game_table/game_table.dart';
 
 class Game extends StatelessWidget {
   const Game({super.key});
@@ -11,31 +12,61 @@ class Game extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          Container(height: 200.0, color: Colors.blue, child: Text('table')),
-          Container(
-            height: 200.0,
-            color: Colors.amber,
-            child: Row(
-              children: [
-                GameCard(
-                  cardData: GameCardData(
-                    name: 'Sheep',
-                    target: GameCardTarget.myTable,
+          Expanded(
+            child: Container(
+              height: 200.0,
+              color: Colors.amber,
+              child: Row(
+                children: [
+                  GameCard(
+                    cardData: GameCardData(
+                      name: 'Sheep',
+                      target: GameCardTarget.myTable,
+                    ),
                   ),
-                ),
-                GameCard(
-                  cardData: GameCardData(
-                    name: 'Fog',
-                    target: GameCardTarget.opTable,
+                  GameCard(
+                    cardData: GameCardData(
+                      name: 'Fog',
+                      target: GameCardTarget.opTable,
+                    ),
                   ),
-                ),
-                GameCard(
-                  cardData: GameCardData(
-                    name: 'Sun',
-                    target: GameCardTarget.myUnit,
+                  GameCard(
+                    cardData: GameCardData(
+                      name: 'Sun',
+                      target: GameCardTarget.myUnit,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
+            ),
+          ),
+          GameTable(),
+          Expanded(
+            child: Container(
+              height: 200.0,
+              color: Colors.amber,
+              child: Row(
+                children: [
+                  GameCard(
+                    cardData: GameCardData(
+                      name: 'Sheep',
+                      target: GameCardTarget.myTable,
+                    ),
+                  ),
+                  GameCard(
+                    cardData: GameCardData(
+                      name: 'Fog',
+                      target: GameCardTarget.opTable,
+                    ),
+                  ),
+                  GameCard(
+                    cardData: GameCardData(
+                      name: 'Sun',
+                      target: GameCardTarget.myUnit,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
