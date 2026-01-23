@@ -18,14 +18,14 @@ class GameCardPlaceholder extends HookWidget {
       duration: const Duration(milliseconds: 200),
     );
 
-    final Animation<double> animation = useMemoized(() {
+    final animation = useMemoized(() {
       return Tween<double>(begin: 0.0, end: 100.0).animate(controller);
-    }, [controller]); // Re-run if controller changes
+    }, [controller]);
 
     useEffect(() {
       controller.forward();
       return null;
-    }, const []); // Empty keys array means it only runs once
+    }, const []);
 
     final animatedWidth = useAnimation(animation);
 

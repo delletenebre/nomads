@@ -22,11 +22,24 @@ class CloudContainer extends StatefulWidget {
 
 class _CloudContainerState extends State<CloudContainer> {
   late List<_EdgePuff> puffs;
+  Color _solidColor = Colors.transparent;
 
   @override
   void initState() {
     super.initState();
     puffs = _generateSmoothPuffs();
+    if ((widget.color.a * 255.0).round().clamp(0, 255) != 0) {
+      _solidColor = widget.color;
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant CloudContainer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Capture the new solid color when it's provided.
+    if ((widget.color.a * 255.0).round().clamp(0, 255) != 0) {
+      _solidColor = widget.color;
+    }
   }
 
   List<_EdgePuff> _generateSmoothPuffs() {
@@ -69,13 +82,26 @@ class _CloudContainerState extends State<CloudContainer> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _CloudPainter(
-        puffs: puffs,
-        color: widget.color,
-        blurAmount: widget.blurAmount,
-        spread: widget.spread,
-      ),
+    final double targetOpacity = widget.color.alpha == 0 ? 0.0 : 1.0;
+
+    // Use the last known solid color for the fade-out animation.
+    final Color baseColor = _solidColor;
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(end: targetOpacity),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      builder: (context, opacity, child) {
+        return CustomPaint(
+          painter: _CloudPainter(
+            puffs: puffs,
+            color: baseColor.withOpacity(opacity),
+            blurAmount: widget.blurAmount,
+            spread: widget.spread,
+          ),
+          child: child,
+        );
+      },
       child: widget.child,
     );
   }
