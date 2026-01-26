@@ -23,6 +23,7 @@ class GameCard extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final tiltNotifier = useValueNotifier(0.0);
+    final offset = useRef(Offset.zero);
 
     return AnimatedCard(
       rotationAngle: rotationAngle,
@@ -34,15 +35,33 @@ class GameCard extends HookWidget {
           double newTilt = details.delta.dx * 0.01;
           newTilt = newTilt.clamp(-0.4, 0.4);
           tiltNotifier.value = newTilt;
+          offset.value += details.delta;
         },
         onDragEnd: (details) {
+          debugPrint(
+            '[GameCard] onDragEnd at ${details.offset} with accepted: ${details.wasAccepted}',
+          );
+
+          if (!details.wasAccepted) {
+            print('lastoffset: ${offset.value}');
+
+            /// если карта не была разыграна правильно
+            // WidgetsBinding.instance.addPostFrameCallback((_) {
+            //   offset.value = Offset.zero;
+            //   // tiltNotifier.value = 0.0;
+            // });
+          }
+
           tiltNotifier.value = 0.0;
-          // Instant play logic is now handled by the DragTarget's onAccept.
         },
         onDragStarted: () {
+          debugPrint('[GameCard] onDragStarted');
+
           onDragStarted?.call();
         },
         onDragCompleted: () {
+          debugPrint('[GameCard] onDragCompleted');
+
           onDragCompleted?.call();
         },
         feedback: ValueListenableBuilder(
@@ -63,10 +82,37 @@ class GameCard extends HookWidget {
             );
           },
         ),
-        childWhenDragging: Opacity(opacity: 0.0, child: SizedBox()),
-        child: GameCardView(cardData: cardData),
+        childWhenDragging: const SizedBox(),
+        child: TweenAnimationBuilder<Offset>(
+          onEnd: () => offset.value = Offset.zero,
+          tween: Tween(begin: offset.value, end: Offset.zero),
+          duration: const Duration(milliseconds: 1200),
+          curve: Curves.ease,
+          builder: (context, offset, child) {
+            return Transform.translate(offset: offset, child: child);
+          },
+          child: GameCardView(cardData: cardData),
+        ),
       ),
     );
+
+    // return AnimatedCard(
+    //   rotationAngle: rotationAngle,
+    //   isActive: isActive,
+    //   child
+
+    // AnimatedContainer(
+    //       key: ValueKey(cardData.id),
+    //       duration: const Duration(milliseconds: 200),
+    //       transform: Matrix4.translationValues(
+    //         offset.value.dx,
+    //         offset.value.dy,
+    //         0.0,
+    //       ),
+    //       child: GameCardView(cardData: cardData),
+    //     ),
+    //   ),
+    // );
   }
 }
 
