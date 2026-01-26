@@ -11,7 +11,7 @@ class CloudContainer extends StatefulWidget {
   const CloudContainer({
     super.key,
     required this.child,
-    this.color = const Color(0xFFE57373), // Reddish color from your image
+    required this.color,
     this.blurAmount = 25.0, // High blur for smoothness
     this.spread = 35.0, // Thick border
   });
@@ -82,10 +82,12 @@ class _CloudContainerState extends State<CloudContainer> {
 
   @override
   Widget build(BuildContext context) {
-    final double targetOpacity = widget.color.alpha == 0 ? 0.0 : 1.0;
+    final targetOpacity = (widget.color.a * 255.0).round().clamp(0, 255) == 0
+        ? 0.0
+        : 1.0;
 
     // Use the last known solid color for the fade-out animation.
-    final Color baseColor = _solidColor;
+    final baseColor = _solidColor;
 
     return TweenAnimationBuilder<double>(
       tween: Tween<double>(end: targetOpacity),
@@ -95,7 +97,7 @@ class _CloudContainerState extends State<CloudContainer> {
         return CustomPaint(
           painter: _CloudPainter(
             puffs: puffs,
-            color: baseColor.withOpacity(opacity),
+            color: baseColor.withValues(alpha: opacity),
             blurAmount: widget.blurAmount,
             spread: widget.spread,
           ),

@@ -84,12 +84,13 @@ class PlayerTable extends HookWidget {
         // Динамически создаем список виджетов карт
         final cardWidgets = cardsOnTable.value.map<Widget>((cardData) {
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: cardSpacing / 2),
+            padding: const .symmetric(horizontal: cardSpacing / 2),
             child: GameCardView(cardData: cardData),
           );
         }).toList();
 
-        // Вставляем плейсхолдер в вычисленную позицию
+        /// вставляем плейсхолдер в вычисленную позицию, что позволяет
+        /// раздвигать карты, выложенные на столе
         if (insertionIndex.value != null) {
           cardWidgets.insert(
             insertionIndex.value!,
@@ -102,14 +103,14 @@ class PlayerTable extends HookWidget {
           spread: 8.0,
           color: isHovered.value ? Colors.green.shade300 : Colors.transparent,
           child: Container(
-            width: double.infinity,
-            alignment: Alignment.center,
+            width: .infinity,
+            alignment: .center,
             child: SingleChildScrollView(
               controller: scrollController,
-              scrollDirection: Axis.horizontal,
+              scrollDirection: .horizontal,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: .center,
+                crossAxisAlignment: .center,
                 children: cardWidgets,
               ),
             ),

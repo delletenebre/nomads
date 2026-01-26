@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:sizer/sizer.dart';
 
-import '../../models/game_card_data.dart';
 import 'playes_table.dart';
 
 class GameTable extends HookWidget {
@@ -23,7 +22,7 @@ class GameTable extends HookWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.all(24.0),
+      padding: const .all(24.0),
       height: 40.0.h,
       color: isTableAccepted.value
           ? Colors.orange.withAlpha(32)

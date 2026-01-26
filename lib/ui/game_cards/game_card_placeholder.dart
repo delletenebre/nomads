@@ -13,30 +13,12 @@ class GameCardPlaceholder extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Use an AnimationController with `useAnimationController` hook
-    // final controller = useAnimationController(
-    //   duration: const Duration(milliseconds: 200),
-    // );
-
-    // final animation = useMemoized(() {
-    //   return Tween<double>(begin: 0.0, end: 100.0).animate(controller);
-    // }, [controller]);
-
-    // useEffect(() {
-    //   controller.forward();
-    //   return null;
-    // }, const []);
-
-    // final animatedWidth = useAnimation(animation);
-
-    // Это просто стилизованный контейнер, который показывает,
-    // куда можно поместить карту.
+    /// стилизованный контейнер, который показывает, куда можно поместить карту
     return TweenAnimationBuilder<double>(
       tween: Tween<double>(begin: 0, end: 100),
       duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
+      curve: Curves.ease,
       builder: (context, width, child) {
-        print(width);
         return Container(
           width: width,
           height: 150, // Высота должна совпадать с высотой карты (150.0)

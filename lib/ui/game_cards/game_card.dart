@@ -12,9 +12,9 @@ class GameCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Draggable<GameCardData>(
       data: cardData,
-      child: GameCardView(cardData: cardData),
       feedback: GameCardView(cardData: cardData),
-      childWhenDragging: SizedBox(),
+      childWhenDragging: const SizedBox(),
+      child: GameCardView(cardData: cardData),
     );
   }
 }
