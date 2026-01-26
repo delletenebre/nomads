@@ -13,9 +13,28 @@ enum GameCardTarget {
   opUnit,
 }
 
+/// типы карты
+enum GameCardType {
+  /// животное
+  creature,
+
+  /// заклинание
+  spell,
+
+  /// проклятье
+  debuff,
+}
+
 class GameCardData {
+  final String id;
   final String name;
   final GameCardTarget target;
+  final GameCardType type;
 
-  GameCardData({required this.name, required this.target});
+  GameCardData({
+    required this.id,
+    required this.name,
+    required this.target,
+    required this.type,
+  });
 }

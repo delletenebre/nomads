@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -14,7 +15,7 @@ class PlayerTable extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scrollController = useScrollController();
+    // final scrollController = useScrollController();
     // Состояние для хранения карт на столе. Используем useState для перерисовки.
     final cardsOnTable = useState<List<GameCardData>>([]);
     // Состояние для индекса, куда будет вставлена карта. null, если не над зоной.
@@ -25,7 +26,7 @@ class PlayerTable extends HookWidget {
     // ВАЖНО: Размеры вашей карты и отступ между ними.
     // Из GameCardView: width = 30 * 3 = 90.
     const cardWidth = 90.0;
-    const cardSpacing = 12.0;
+    const cardSpacing = 60.0;
 
     void updateInsertionIndex(Offset globalOffset) {
       final box = context.findRenderObject() as RenderBox;
@@ -42,7 +43,9 @@ class PlayerTable extends HookWidget {
           : 0.0;
 
       // Позиция курсора относительно начала ряда (с учетом прокрутки)
-      final relativeDx = localOffset.dx + scrollController.offset - rowStartX;
+      final relativeDx =
+          localOffset.dx -
+          rowStartX; //localOffset.dx + scrollController.offset - rowStartX;
 
       // Вычисляем индекс, округляя до ближайшего слота
       final index = (relativeDx / itemWidth).round();
@@ -105,14 +108,25 @@ class PlayerTable extends HookWidget {
           child: Container(
             width: .infinity,
             alignment: .center,
-            child: SingleChildScrollView(
-              controller: scrollController,
-              scrollDirection: .horizontal,
-              child: Row(
-                mainAxisAlignment: .center,
-                crossAxisAlignment: .center,
-                children: cardWidgets,
-              ),
+            child: Builder(
+              builder: (context) {
+                final stackWidth = cardWidgets.isNotEmpty
+                    ? (cardWidgets.length - 1) * cardSpacing + cardWidth
+                    : 0.0;
+                return SizedBox(
+                  width: stackWidth,
+                  height: 150, // Card height
+                  child: Stack(
+                    children: cardWidgets.mapIndexed((index, card) {
+                      return Positioned(
+                        left: index * cardSpacing,
+                        top: 0,
+                        child: card,
+                      );
+                    }).toList(),
+                  ),
+                );
+              },
             ),
           ),
         );
