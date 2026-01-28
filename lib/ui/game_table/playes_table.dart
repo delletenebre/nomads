@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../models/game_card_data.dart';
 import '../cards/cloud_container.dart';
+import '../game_cards/game_card.dart';
 import '../game_cards/game_card_placeholder.dart';
 import '../game_cards/game_card_view.dart';
 
@@ -25,14 +26,14 @@ class PlayerTable extends HookWidget {
     // ВАЖНО: Размеры вашей карты и отступ между ними.
     // Из GameCardView: width = 30 * 3 = 90.
     const cardWidth = 90.0;
-    const cardSpacing = 60.0;
+    const spacingFactor = 1.1;
 
     void updateInsertionIndex(Offset globalOffset) {
       final box = context.findRenderObject() as RenderBox;
       final localOffset = box.globalToLocal(globalOffset);
 
       final currentCardsCount = cardsOnTable.value.length;
-      final itemWidth = cardWidth + cardSpacing;
+      final itemWidth = cardWidth * spacingFactor;
       final totalRowWidth = currentCardsCount * itemWidth;
       final tableWidth = box.size.width;
 
@@ -85,11 +86,7 @@ class PlayerTable extends HookWidget {
       builder: (context, candidateData, rejectedData) {
         // Динамически создаем список виджетов карт
         final cardWidgets = cardsOnTable.value.map<Widget>((cardData) {
-          return Padding(
-            key: ValueKey(cardData.id),
-            padding: const .symmetric(horizontal: cardSpacing / 2),
-            child: GameCardView(cardData: cardData),
-          );
+          return GameCardView(key: ValueKey(cardData.id), cardData: cardData);
         }).toList();
 
         /// вставляем плейсхолдер в вычисленную позицию, что позволяет
@@ -98,9 +95,8 @@ class PlayerTable extends HookWidget {
           cardWidgets.insert(
             insertionIndex.value!,
             GameCardPlaceholder(
-              key: ValueKey('placeholder_$insertionIndex'),
+              //key: ValueKey('placeholder$insertionIndex'),
               width: cardWidth,
-              spacing: cardSpacing,
             ),
           );
         }
@@ -114,83 +110,23 @@ class PlayerTable extends HookWidget {
             alignment: .center,
             child: Builder(
               builder: (context) {
-                // final spacingFactor = 0.5;
-                // for (int index = 0; index < cardWidgets.length; index++) {
-                //   final card = cardWidgets[index];
-
-                //   final total = cardWidgets.length;
-                //   final centerIndex = (total - 1) / 2;
-                //   final offsetFromCenter = index - centerIndex;
-
-                //   final double spacingX = cardWidth * spacingFactor;
-                //   final double translateX = offsetFromCenter * spacingX;
-                //   final double translateY =
-                //       offsetFromCenter.abs() * (cardWidth * 0.12);
-
-                //   final double leftPos =
-                //       (containerWidth / 2) + translateX - (cardWidth / 2);
-                //   final double bottomPos = -translateY + 20;
-
-                //   final double rotationAngle = isActive
-                //       ? 0.0
-                //       : offsetFromCenter * 0.1;
-
-                //   final cardWidget = AnimatedPositioned(
-                //     key: ValueKey(card.id),
-                //     duration: const Duration(milliseconds: 200),
-                //     curve: Curves.easeOutCubic,
-                //     left: leftPos,
-                //     bottom: bottomPos,
-                //     child: MouseRegion(
-                //       hitTestBehavior: HitTestBehavior.opaque,
-                //       onEnter: (event) {
-                //         hoveredCardId.value = card.id;
-                //         onCardHover(card.id, true);
-                //       },
-                //       onExit: (event) {
-                //         if (hoveredCardId.value == card.id) {
-                //           hoveredCardId.value = null;
-                //         }
-                //         onCardHover(card.id, false);
-                //       },
-                //       child: GestureDetector(
-                //         onTap: () => onCardTap(card.id),
-                //         child: GameCard(
-                //           cardData: card,
-                //           rotationAngle: rotationAngle,
-                //           isActive: isActive,
-                //         ),
-                //       ),
-                //     ),
-                //   );
-
-                //   if (isActive) {
-                //     activeCardWidget = cardWidget;
-                //   } else {
-                //     standardCards.add(cardWidget);
-                //   }
-                // }
-
-                // return Stack(
-                //   clipBehavior: Clip.none,
-                //   children: [
-                //     ...standardCards,
-                //     if (activeCardWidget != null) activeCardWidget,
-                //   ],
-                // );
-
+                final double spacingX = cardWidth * spacingFactor;
                 final stackWidth = cardWidgets.isNotEmpty
-                    ? (cardWidgets.length - 1) * cardSpacing + cardWidth
+                    ? (cardWidgets.length - 1) * spacingX + cardWidth
                     : 0.0;
-                return SizedBox(
+
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
                   width: stackWidth,
-                  height: 150, // Card height
+                  height: 150,
+                  color: Colors.deepPurpleAccent,
                   child: Stack(
                     children: cardWidgets.mapIndexed((index, card) {
                       return AnimatedPositioned(
                         key: card.key,
                         duration: const Duration(milliseconds: 200),
-                        left: index * cardSpacing,
+                        curve: Curves.ease,
+                        left: index * spacingX,
                         top: 0,
                         child: card,
                       );
