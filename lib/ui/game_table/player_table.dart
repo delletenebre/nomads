@@ -73,11 +73,14 @@ class PlayerTable extends HookWidget {
       },
       onLeave: (data) {},
       onCardDropped: (details) {
-        // Добавляем карту в список в вычисленной позиции
-        final index = insertionIndex.value ?? cardsOnTable.value.length;
-        final newCards = List<GameCardData>.from(cardsOnTable.value);
-        newCards.insert(index, details.data);
-        cardsOnTable.value = newCards;
+        /// можно разместить существо
+        if (details.data.type == GameCardType.creature) {
+          // Добавляем карту в список в вычисленной позиции
+          final index = insertionIndex.value ?? cardsOnTable.value.length;
+          final newCards = List<GameCardData>.from(cardsOnTable.value);
+          newCards.insert(index, details.data);
+          cardsOnTable.value = newCards;
+        }
       },
       builder: (context, isHovered, isAccepted) {
         // Динамически создаем список виджетов карт

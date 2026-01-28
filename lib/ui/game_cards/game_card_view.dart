@@ -9,12 +9,12 @@ class GameCardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = 3.0;
+    final size = 1.0;
 
     return Material(
       child: Container(
-        width: 30.0 * size,
-        height: 50.0 * size,
+        width: 63.0 * size,
+        height: 88.0 * size,
         color: switch (cardData.type) {
           GameCardType.creature => Colors.red,
           GameCardType.spell => Colors.blue,
