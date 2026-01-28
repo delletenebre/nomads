@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:sizer/sizer.dart';
 
-import 'playes_table.dart';
+import '../../models/game_card_data.dart';
+import 'player_table.dart';
 
 class GameTable extends HookWidget {
   const GameTable({super.key});
@@ -32,6 +33,7 @@ class GameTable extends HookWidget {
           /// стол противника
           Expanded(
             child: PlayerTable(
+              acceptedTargets: [GameCardTarget.opponentTable],
               onStatusChanged: (isAccepted) {
                 isAcceptedOpponentTable.value = isAccepted;
                 checkTableStatus();
@@ -42,6 +44,7 @@ class GameTable extends HookWidget {
           /// стол игрока
           Expanded(
             child: PlayerTable(
+              acceptedTargets: [GameCardTarget.myTable],
               onStatusChanged: (isAccepted) {
                 isAcceptedPlayerTable.value = isAccepted;
                 checkTableStatus();

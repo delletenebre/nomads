@@ -4,13 +4,13 @@ enum GameCardTarget {
   myTable,
 
   /// стол противника
-  opTable,
+  opponentTable,
 
   /// мой юнит
   myUnit,
 
   /// юнит противника
-  opUnit,
+  opponentUnit,
 }
 
 /// типы карты

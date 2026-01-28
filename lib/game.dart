@@ -32,7 +32,7 @@ class Game extends StatelessWidget {
                     cardData: GameCardData(
                       id: Ulid().toString(),
                       name: 'Fog',
-                      target: GameCardTarget.opTable,
+                      target: GameCardTarget.opponentTable,
                       type: GameCardType.spell,
                     ),
                   ),
@@ -61,7 +61,7 @@ class Game extends StatelessWidget {
                 GameCardData(
                   id: Ulid().toString(),
                   name: 'Fog',
-                  target: GameCardTarget.opTable,
+                  target: GameCardTarget.opponentTable,
                   type: GameCardType.debuff,
                 ),
                 GameCardData(
