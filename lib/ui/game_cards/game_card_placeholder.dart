@@ -16,7 +16,7 @@ class GameCardPlaceholder extends HookWidget {
     /// стилизованный контейнер, который показывает, куда можно поместить карту
     return TweenAnimationBuilder<double>(
       tween: Tween<double>(begin: 0, end: 100),
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 200),
       curve: Curves.ease,
       builder: (context, width, child) {
         return Container(
