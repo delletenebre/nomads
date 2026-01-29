@@ -9,12 +9,12 @@ import '../game_cards/game_card_placeholder.dart';
 import '../game_cards/game_card_view.dart';
 
 class PlayerTable extends HookWidget {
-  final List<GameCardTarget> acceptedTargets;
+  // final List<GameCardTarget> acceptedTargets;
   final void Function(bool isAccepted) onStatusChanged;
 
   const PlayerTable({
     super.key,
-    required this.acceptedTargets,
+    // required this.acceptedTargets,
     required this.onStatusChanged,
   });
 
@@ -63,7 +63,8 @@ class PlayerTable extends HookWidget {
 
     return GameCardDropZone(
       willAcceptCard: (details) {
-        return acceptedTargets.contains(details.data.target);
+        return true;
+        //acceptedTargets.contains(details.data.target);
       },
       onStatusChanged: (isAccepted, details) {
         updateInsertionIndex(details?.offset);

@@ -33,7 +33,7 @@ class GameTable extends HookWidget {
           /// стол противника
           Expanded(
             child: PlayerTable(
-              acceptedTargets: [GameCardTarget.opponentTable],
+              // acceptedTargets: [GameCardTarget.opponentTable],
               onStatusChanged: (isAccepted) {
                 isAcceptedOpponentTable.value = isAccepted;
                 checkTableStatus();
@@ -44,7 +44,7 @@ class GameTable extends HookWidget {
           /// стол игрока
           Expanded(
             child: PlayerTable(
-              acceptedTargets: [GameCardTarget.myTable],
+              // acceptedTargets: [GameCardTarget.myTable],
               onStatusChanged: (isAccepted) {
                 isAcceptedPlayerTable.value = isAccepted;
                 checkTableStatus();

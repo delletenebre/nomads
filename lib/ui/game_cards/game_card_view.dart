@@ -18,7 +18,8 @@ class GameCardView extends StatelessWidget {
         color: switch (cardData.type) {
           GameCardType.creature => Colors.red,
           GameCardType.spell => Colors.blue,
-          GameCardType.debuff => Colors.yellow,
+          GameCardType.event => Colors.yellow,
+          GameCardType.hero => Colors.green,
         },
         child: Text('${cardData.name}'),
       ),
