@@ -1,6 +1,5 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../models/animal.dart';
 import '../../models/game_card_data.dart';
 import 'pasture_cell.dart';
 

@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
+import '../../models/creature_card_data.dart';
 import '../../models/game_card_data.dart';
 import 'cell_drop_zone.dart';
 
@@ -19,6 +20,11 @@ class HexTile<T extends Object> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sheepSize = size * 0.42;
+    final creatureSizes = {
+      CreatureCardType.sheep: size * 0.32,
+      CreatureCardType.cow: size * 0.5,
+      CreatureCardType.camel: size * 0.5,
+    };
     return CellDropZone<T>(
       willAcceptCard: (details) => true,
       onCardDropped: (details) {
@@ -117,29 +123,44 @@ class HexTile<T extends Object> extends StatelessWidget {
             ),
 
             ...cards.mapIndexed((index, card) {
-              double leftMult, topMult;
+              Widget child = Image.asset(
+                'assets/images/sheep.png',
+                width: sheepSize,
+              );
+              double imageSize = sheepSize;
 
-              // ЛОГИКА РАССТАНОВКИ ТРЕУГОЛЬНИКОМ (ПИРАМИДОЙ)
-              if (index == 0) {
-                // --- Элемент 1: Верхний левый ---
-                leftMult = 0.1;
-                topMult = 0.1;
-              } else if (index == 1) {
-                // --- Элемент 2: Верхний правый ---
-                // Отступ слева + 1 полная ширина
-                leftMult = 1.1;
-                topMult = 0.1;
-              } else {
-                // --- Элемент 3: Нижний центральный ---
-                // По горизонтали: ровно между 0.1 и 1.1 -> (0.1 + 1.1) / 2 = 0.6
-                leftMult = 0.6;
-                // По вертикали: отступ сверху + шаг вниз (0.8) -> 0.1 + 0.8 = 0.9
-                topMult = 0.9;
+              if (card is CreatureCard) {
+                imageSize = creatureSizes[card.creatureType]!;
+                child = Image.asset(
+                  'assets/images/${card.creatureType.name}.png',
+                  width: imageSize,
+                );
               }
 
+              // 1. Grid Logic
+              final col = index % 2;
+              final row = index ~/ 2;
+
+              // 2. Item Size (Must be known to center perfectly)
+              final itemSize = card is CreatureCard
+                  ? creatureSizes[card.creatureType]!
+                  : 50.0;
+
+              final padding = (size * 0.1);
+              final gridSize = size - padding * 2.0;
+              final cellSize = gridSize * 0.5;
+
+              final double cellCenterX = (col * cellSize) + (cellSize / 2);
+              final double cellCenterY = (row * cellSize) + (cellSize / 2);
+
+              // 4. Calculate final position
+              // Start with Padding + Cell Center - Half the Item Size
+              final left = padding + cellCenterX - (imageSize / 2);
+              final top = padding + cellCenterY - (imageSize / 2);
+
               return Positioned(
-                top: sheepSize * topMult,
-                left: sheepSize * leftMult,
+                top: top,
+                left: left,
                 child: ColorFiltered(
                   colorFilter: ColorFilter.mode(
                     card.playerId == '2'
@@ -147,10 +168,7 @@ class HexTile<T extends Object> extends StatelessWidget {
                         : Colors.red.withAlpha(100),
                     BlendMode.srcATop,
                   ),
-                  child: Image.asset(
-                    'assets/images/sheep.png',
-                    width: sheepSize,
-                  ),
+                  child: child,
                 ),
               );
             }),

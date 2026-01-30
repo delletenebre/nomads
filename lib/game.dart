@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ulid/ulid.dart';
 
+import 'models/creature_card_data.dart';
 import 'models/game_card_data.dart';
 import 'ui/game_cards/game_card.dart';
 import 'ui/game_hand/game_hand.dart';
@@ -38,13 +39,26 @@ class Game extends StatelessWidget {
           Expanded(
             child: GameHand(
               cards: [
-                GameCardData(
+                CreatureCard(
                   id: Ulid().toString(),
                   playerId: '2',
                   name: 'Sheep',
-                  // target: GameCardTarget.myTable,
-                  type: GameCardType.creature,
+                  creatureType: CreatureCardType.sheep,
                   weight: 1.0,
+                ),
+                CreatureCard(
+                  id: Ulid().toString(),
+                  playerId: '2',
+                  name: 'Cow',
+                  creatureType: CreatureCardType.cow,
+                  weight: 2.0,
+                ),
+                CreatureCard(
+                  id: Ulid().toString(),
+                  playerId: '2',
+                  name: 'Camel',
+                  creatureType: CreatureCardType.camel,
+                  weight: 4.0,
                 ),
                 GameCardData(
                   id: Ulid().toString(),

@@ -72,7 +72,7 @@ class Pasture extends HookConsumerWidget {
                       top: top,
                       left: left,
                       child: HexTile<GameCardData>(
-                        size: cellSize,
+                        size: 100,
                         cards: pastureState[index].cards,
                         onCardDropped: (card) {
                           ref
