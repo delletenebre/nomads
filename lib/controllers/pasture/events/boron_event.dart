@@ -21,7 +21,7 @@ class BoronEvent extends PastureEvent {
 
     // В реальности здесь нужно вызвать метод возврата карт в руку игрокам
     // А на поле — очистить список животных
-    notifier.updateCell(randomIndex, cell.copyWith(animals: []));
+    notifier.updateCell(randomIndex, cell.copyWith(cards: []));
 
     // Можно также временно снизить уровень травы (заморозки)
     print("Буран ударил по клетке $randomIndex!");

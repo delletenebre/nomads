@@ -1,58 +1,29 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:morphable_shape/morphable_shape.dart';
 
 import '../../models/game_card_data.dart';
 import 'cell_drop_zone.dart';
 
-// class AnimatedAnimalToken extends StatelessWidget {
-//   final Animal animal;
-//   final Key? key; // Важно для AnimatedSwitcher
-
-//   const AnimatedAnimalToken({required this.animal, this.key}) : super(key: key);
-
-//   String _getAnimalEmoji(AnimalType type) {
-//     switch (type) {
-//       case AnimalType.koy:
-//         return "🐑";
-//       case AnimalType.uy:
-//         return "🐄";
-//       case AnimalType.jylky:
-//         return "🐎";
-//       case AnimalType.too:
-//         return "🐪";
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       width: 30,
-//       height: 30,
-//       decoration: BoxDecoration(
-//         color: animal.playerId == "me" ? Colors.blue[100] : Colors.red[100],
-//         shape: BoxShape.circle,
-//         border: Border.all(color: Colors.black26),
-//       ),
-//       child: Center(
-//         child: Text(
-//           _getAnimalEmoji(animal.type),
-//           style: const TextStyle(fontSize: 16),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-class HexTile extends StatelessWidget {
+class HexTile<T extends Object> extends StatelessWidget {
+  final void Function(T) onCardDropped;
+  final List<GameCardData> cards;
   final double size;
 
-  const HexTile({super.key, required this.size});
+  const HexTile({
+    super.key,
+    required this.size,
+    this.cards = const [],
+    required this.onCardDropped,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return CellDropZone(
+    final sheepSize = size * 0.42;
+    return CellDropZone<T>(
       willAcceptCard: (details) => true,
-      onCardDropped: (details) {},
+      onCardDropped: (details) {
+        onCardDropped.call(details.data);
+      },
       onStatusChanged: (isAccepted, details) {},
       builder: (context, isHovered, isAccepted) {
         return Stack(
@@ -96,15 +67,9 @@ class HexTile extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isHovered ? Colors.green.withAlpha(100) : null,
                 ),
-                child: // --- СЛОЙ 3: ТЕКСТ ---
-                const Center(
-                  child: Text(
-                    'Star',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
+                child: Stack(children: [
+                    
+                  ],
                 ),
               ),
             ),
@@ -150,6 +115,57 @@ class HexTile extends StatelessWidget {
                 ),
               ),
             ),
+
+            ...cards.mapIndexed((index, card) {
+              double leftMult, topMult;
+
+              // ЛОГИКА РАССТАНОВКИ ТРЕУГОЛЬНИКОМ (ПИРАМИДОЙ)
+              if (index == 0) {
+                // --- Элемент 1: Верхний левый ---
+                leftMult = 0.1;
+                topMult = 0.1;
+              } else if (index == 1) {
+                // --- Элемент 2: Верхний правый ---
+                // Отступ слева + 1 полная ширина
+                leftMult = 1.1;
+                topMult = 0.1;
+              } else {
+                // --- Элемент 3: Нижний центральный ---
+                // По горизонтали: ровно между 0.1 и 1.1 -> (0.1 + 1.1) / 2 = 0.6
+                leftMult = 0.6;
+                // По вертикали: отступ сверху + шаг вниз (0.8) -> 0.1 + 0.8 = 0.9
+                topMult = 0.9;
+              }
+
+              return Positioned(
+                top: sheepSize * topMult,
+                left: sheepSize * leftMult,
+                child: ColorFiltered(
+                  colorFilter: ColorFilter.mode(
+                    card.playerId == '2'
+                        ? Colors.transparent
+                        : Colors.red.withAlpha(100),
+                    BlendMode.srcATop,
+                  ),
+                  child: Image.asset(
+                    'assets/images/sheep.png',
+                    width: sheepSize,
+                  ),
+                ),
+              );
+            }),
+
+            // Positioned(
+            //   left: sheepSize * 1.1,
+            //   top: sheepSize * 0.1,
+            //   child: Image.asset('assets/images/sheep.png', width: sheepSize),
+            // ),
+
+            // Positioned(
+            //   left: sheepSize * 0.62,
+            //   top: sheepSize * 0.72,
+            //   child: Image.asset('assets/images/sheep.png', width: sheepSize),
+            // ),
           ],
         );
       },

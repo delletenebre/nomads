@@ -65,7 +65,9 @@ void main() {
     float vignette = vUv.x * vUv.y * (1.0 - vUv.x) * (1.0 - vUv.y);
     vignette = pow(vignette, 0.25);
 
-    float globalAlpha = 0.65;
+    vignette = 1.0;
+
+    float globalAlpha = 0.8;
 
     // Итоговая альфа с учетом uOpacity
     // uOpacity приходит из Flutter (анимация растворения)

@@ -28,16 +28,20 @@ enum GameCardType {
   event,
 }
 
-abstract class GameCardData {
+class GameCardData {
   final String id;
+  final String playerId;
   final String name;
   // final GameCardTarget target;
   final GameCardType type;
+  final double weight;
 
   GameCardData({
     required this.id,
+    required this.playerId,
     required this.name,
     // required this.target,
     required this.type,
+    required this.weight,
   });
 }

@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:ulid/ulid.dart';
 
 import 'models/game_card_data.dart';
-import 'models/pasture_card_data.dart';
 import 'ui/game_cards/game_card.dart';
 import 'ui/game_hand/game_hand.dart';
-import 'ui/game_table/game_table.dart';
 import 'ui/pasture/pasture.dart';
 
 class Game extends StatelessWidget {
@@ -23,27 +21,13 @@ class Game extends StatelessWidget {
               child: Row(
                 children: [
                   GameCard(
-                    cardData: PastureCardData(
+                    cardData: GameCardData(
                       id: Ulid().toString(),
+                      playerId: '1',
                       name: 'Sheep',
                       // target: GameCardTarget.myTable,
                       type: GameCardType.creature,
-                    ),
-                  ),
-                  GameCard(
-                    cardData: PastureCardData(
-                      id: Ulid().toString(),
-                      name: 'Fog',
-                      // target: GameCardTarget.opponentTable,
-                      type: GameCardType.spell,
-                    ),
-                  ),
-                  GameCard(
-                    cardData: PastureCardData(
-                      id: Ulid().toString(),
-                      name: 'Sun',
-                      // target: GameCardTarget.myUnit,
-                      // type: GameCardType.debuff,
+                      weight: 1.0,
                     ),
                   ),
                 ],
@@ -54,23 +38,30 @@ class Game extends StatelessWidget {
           Expanded(
             child: GameHand(
               cards: [
-                PastureCardData(
+                GameCardData(
                   id: Ulid().toString(),
+                  playerId: '2',
                   name: 'Sheep',
                   // target: GameCardTarget.myTable,
                   type: GameCardType.creature,
+                  weight: 1.0,
                 ),
-                PastureCardData(
+                GameCardData(
                   id: Ulid().toString(),
+                  playerId: '2',
                   name: 'Fog',
                   // target: GameCardTarget.opponentTable,
                   // type: GameCardType.debuff,
+                  type: GameCardType.event,
+                  weight: 0.0,
                 ),
-                PastureCardData(
+                GameCardData(
                   id: Ulid().toString(),
+                  playerId: '2',
                   name: 'Sun',
                   // target: GameCardTarget.myUnit,
                   type: GameCardType.spell,
+                  weight: 1.0,
                 ),
               ],
               cardWidth: 100,

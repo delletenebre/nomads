@@ -1,13 +1,11 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../controllers/pasture/pasture_provider.dart';
-import '../../models/animal.dart';
-import '../game_cards/game_card_drop_zone.dart';
+import '../../models/game_card_data.dart';
+import '../effects/fog_overlay.dart';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../controllers/pasture/pasture_cell.dart';
 import 'pasture_cell_view.dart';
 
 class Pasture extends HookConsumerWidget {
@@ -19,147 +17,77 @@ class Pasture extends HookConsumerWidget {
     /// контроллер пастбища
     final pastureState = ref.watch(pastureProvider);
 
-    return Container(
-      width: double.maxFinite,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/pasture1.png'),
-          fit: BoxFit.cover,
-        ),
-      ),
+    return FogOverlay(
+      isEnabled: false,
       child: Container(
-        constraints: BoxConstraints(maxWidth: 320),
-        padding: const EdgeInsets.all(12),
-        child: AspectRatio(
-          aspectRatio: 1.0,
-          child: LayoutBuilder(
-            builder: (context, constrains) {
-              final cellSize = constrains.maxWidth / 3;
-
-              return Stack(
-                children: [
-                  Positioned(
-                    left: 0.0,
-                    top: 0.0,
-                    child: HexTile(size: cellSize),
-                  ),
-                  Positioned(
-                    left: cellSize,
-                    top: 0.0,
-                    child: HexTile(size: cellSize),
-                  ),
-                  Positioned(
-                    left: cellSize * 2,
-                    top: 0.0,
-                    child: HexTile(size: cellSize),
-                  ),
-
-                  Positioned(
-                    left: cellSize * 0.5,
-                    top: cellSize * 0.85,
-                    child: HexTile(size: cellSize),
-                  ),
-                  Positioned(
-                    left: (cellSize * 0.5) * 3,
-                    top: cellSize * 0.85,
-                    child: HexTile(size: cellSize),
-                  ),
-
-                  Positioned(
-                    left: 0.0,
-                    top: cellSize * 0.85 * 2,
-                    child: HexTile(size: cellSize),
-                  ),
-                  Positioned(
-                    left: cellSize,
-                    top: cellSize * 0.85 * 2,
-                    child: HexTile(size: cellSize),
-                  ),
-                  Positioned(
-                    left: cellSize * 2,
-                    top: cellSize * 0.85 * 2,
-                    child: HexTile(size: cellSize),
-                  ),
-                ],
-              );
-            },
+        width: double.maxFinite,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/pasture1.png'),
+            fit: BoxFit.cover,
           ),
         ),
-        // child: GridView.builder(
-        //   physics:
-        //       const NeverScrollableScrollPhysics(), // Поле не должно скроллиться
-        //   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        //     crossAxisCount: 3,
-        //     crossAxisSpacing: 10,
-        //     mainAxisSpacing: 10,
-        //   ),
-        //   itemCount: 9,
-        //   itemBuilder: (context, index) {
-        //     return JaiilooCell(
-        //       index: index,
-        //       cell: pastureState[index],
-        //       onAnimalDropped: (animal) {
-        //         ref.read(pastureProvider.notifier).addAnimal(index, animal);
-        //       },
-        //     );
-        //   },
-        // ),
+        child: Container(
+          constraints: BoxConstraints(maxWidth: 320),
+          padding: const EdgeInsets.all(12),
+          child: AspectRatio(
+            aspectRatio: 1.0,
+            child: LayoutBuilder(
+              builder: (context, constrains) {
+                final cellSize = constrains.maxWidth / 3;
+
+                return Stack(
+                  children: pastureState.mapIndexed((index, cell) {
+                    int r, c;
+
+                    // ЛОГИКА 3x2x3
+                    if (index < 3) {
+                      // Первые 3 элемента (0, 1, 2) -> Ряд 0
+                      r = 0;
+                      c = index;
+                    } else if (index < 5) {
+                      // Следующие 2 элемента (3, 4) -> Ряд 1
+                      r = 1;
+                      c =
+                          index -
+                          3; // сбрасываем счетчик колонки (3 превращаем в 0, 4 в 1)
+                    } else {
+                      // Остальные 3 элемента (5, 6, 7) -> Ряд 2
+                      r = 2;
+                      c = index - 5; // сбрасываем (5->0, 6->1, 7->2)
+                    }
+
+                    // Вертикаль: каждый ряд ниже на 0.85 высоты клетки
+                    final top = r * cellSize * 0.85;
+
+                    // Горизонталь:
+                    // Базовая позиция (c * cellSize)
+                    // + Смещение для нечетных рядов (если ряд 1, сдвигаем на половину клетки)
+                    final rowShift = (r % 2 == 1) ? (cellSize * 0.5) : 0.0;
+
+                    final left = (c * cellSize) + rowShift;
+
+                    return Positioned(
+                      top: top,
+                      left: left,
+                      child: HexTile<GameCardData>(
+                        size: cellSize,
+                        cards: pastureState[index].cards,
+                        onCardDropped: (card) {
+                          ref
+                              .watch(pastureProvider.notifier)
+                              .addCard(index, card);
+                        },
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
+            ),
+          ),
+        ),
       ),
     );
-
-    // return Container(
-    //   width: screen.height * 0.4,
-    //   height: screen.height * 0.4,
-    //   child: GridView.count(
-    //     crossAxisCount: 3,
-    //     crossAxisSpacing: 4.0,
-    //     mainAxisSpacing: 4.0,
-    //     padding: const EdgeInsets.all(10.0),
-    //     physics: const NeverScrollableScrollPhysics(),
-    //     children: pastureState.map((cell) {
-    //       return GameCardDropZone(
-    //         willAcceptCard: (details) {
-    //           return cell.animals.length < 3;
-    //           // return acceptedTargets.contains(details.data.target);
-    //         },
-    //         onStatusChanged: (isAccepted, details) {
-    //           // updateInsertionIndex(details?.offset);
-    //         },
-    //         onMove: (details) {
-    //           // updateInsertionIndex(details.offset);
-    //         },
-    //         onLeave: (data) {},
-    //         onCardDropped: (details) {
-    //           /// можно разместить существо
-    //           // if (details.data.type == GameCardType.creature) {
-    //           //   // Добавляем карту в список в вычисленной позиции
-    //           //   final index = insertionIndex.value ?? cardsOnTable.value.length;
-    //           //   final newCards = List<GameCardData>.from(cardsOnTable.value);
-    //           //   newCards.insert(index, details.data);
-    //           //   cardsOnTable.value = newCards;
-    //           // }
-    //         },
-    //         builder: (context, isHovered, isAccepted) {
-    //           return AnimatedContainer(
-    //             duration: const Duration(milliseconds: 200),
-    //             curve: Curves.ease,
-    //             decoration: BoxDecoration(
-    //               color: isHovered
-    //                   ? Colors.green.shade300
-    //                   : Colors.blueGrey.shade100,
-    //               borderRadius: BorderRadius.circular(8.0),
-    //             ),
-    //             alignment: Alignment.center,
-    //             child: Text(
-    //               '$item',
-    //               style: const TextStyle(color: Colors.white, fontSize: 24),
-    //             ),
-    //           );
-    //         },
-    //       );
-    //     }).toList(),
-    //   ),
-    // );
   }
 }

@@ -1,4 +1,4 @@
-import '../../../models/animal.dart';
+import '../../../models/game_card_data.dart';
 import '../pasture_provider.dart';
 import 'pasture_event.dart';
 
@@ -17,21 +17,21 @@ class WolfEvent extends PastureEvent {
 
     // Ищем самую населенную клетку
     for (int i = 0; i < notifier.state.length; i++) {
-      if (notifier.state[i].animals.length > maxAnimals) {
-        maxAnimals = notifier.state[i].animals.length;
+      if (notifier.state[i].cards.length > maxAnimals) {
+        maxAnimals = notifier.state[i].cards.length;
         targetIndex = i;
       }
     }
 
     if (targetIndex != -1) {
-      var animals = List<Animal>.from(notifier.state[targetIndex].animals);
+      var animals = List<GameCardData>.from(notifier.state[targetIndex].cards);
       // Волк съедает самое слабое животное (обычно овцу)
       animals.sort((a, b) => a.weight.compareTo(b.weight));
       animals.removeAt(0);
 
       notifier.updateCell(
         targetIndex,
-        notifier.state[targetIndex].copyWith(animals: animals),
+        notifier.state[targetIndex].copyWith(cards: animals),
       );
     }
   }
