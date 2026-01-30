@@ -29,7 +29,7 @@ class Pasture extends HookConsumerWidget {
           ),
         ),
         child: Container(
-          constraints: BoxConstraints(maxWidth: 320),
+          constraints: BoxConstraints(maxWidth: 400),
           padding: const EdgeInsets.all(12),
           child: AspectRatio(
             aspectRatio: 1.0,
@@ -38,6 +38,7 @@ class Pasture extends HookConsumerWidget {
                 final cellSize = constrains.maxWidth / 3;
 
                 return Stack(
+                  clipBehavior: Clip.none,
                   children: pastureState.mapIndexed((index, cell) {
                     int r, c;
 
@@ -72,7 +73,7 @@ class Pasture extends HookConsumerWidget {
                       top: top,
                       left: left,
                       child: HexTile<GameCardData>(
-                        size: 100,
+                        size: cellSize,
                         cards: pastureState[index].cards,
                         onCardDropped: (card) {
                           ref

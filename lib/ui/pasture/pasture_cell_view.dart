@@ -19,6 +19,8 @@ class HexTile<T extends Object> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = size * 1.1;
+    final height = size * 0.9;
     final sheepSize = size * 0.42;
     final creatureSizes = {
       CreatureCardType.sheep: size * 0.32,
@@ -38,8 +40,8 @@ class HexTile<T extends Object> extends StatelessWidget {
             // --- СЛОЙ 1: ОСНОВА (Картинка + Черная обводка + Тень) ---
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
+              width: width,
               height: size,
-              width: size,
               clipBehavior: Clip.antiAlias,
               decoration: ShapeDecoration(
                 // Используем твою картинку
@@ -68,8 +70,8 @@ class HexTile<T extends Object> extends StatelessWidget {
               ),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                height: size,
-                width: size,
+                width: width,
+                height: size * 0.9,
                 decoration: BoxDecoration(
                   color: isHovered ? Colors.green.withAlpha(100) : null,
                 ),
@@ -141,22 +143,20 @@ class HexTile<T extends Object> extends StatelessWidget {
               final col = index % 2;
               final row = index ~/ 2;
 
-              // 2. Item Size (Must be known to center perfectly)
-              final itemSize = card is CreatureCard
-                  ? creatureSizes[card.creatureType]!
-                  : 50.0;
+              final paddingX = (width * 0.1);
+              final paddingY = (size * 0.2);
+              final gridSizeX = width - paddingX * 2.0;
+              final gridSizeY = size - paddingY * 2.0;
+              final cellSizeX = gridSizeX * 0.5;
+              final cellSizeY = gridSizeY * 0.5;
 
-              final padding = (size * 0.1);
-              final gridSize = size - padding * 2.0;
-              final cellSize = gridSize * 0.5;
-
-              final double cellCenterX = (col * cellSize) + (cellSize / 2);
-              final double cellCenterY = (row * cellSize) + (cellSize / 2);
+              final cellCenterX = (col * cellSizeX) + (cellSizeX / 2);
+              final cellCenterY = (row * cellSizeX) + (cellSizeY / 2);
 
               // 4. Calculate final position
               // Start with Padding + Cell Center - Half the Item Size
-              final left = padding + cellCenterX - (imageSize / 2);
-              final top = padding + cellCenterY - (imageSize / 2);
+              final left = paddingX + cellCenterX - (imageSize / 2);
+              final top = paddingX + cellCenterY - (imageSize / 2);
 
               return Positioned(
                 top: top,
@@ -172,18 +172,6 @@ class HexTile<T extends Object> extends StatelessWidget {
                 ),
               );
             }),
-
-            // Positioned(
-            //   left: sheepSize * 1.1,
-            //   top: sheepSize * 0.1,
-            //   child: Image.asset('assets/images/sheep.png', width: sheepSize),
-            // ),
-
-            // Positioned(
-            //   left: sheepSize * 0.62,
-            //   top: sheepSize * 0.72,
-            //   child: Image.asset('assets/images/sheep.png', width: sheepSize),
-            // ),
           ],
         );
       },
