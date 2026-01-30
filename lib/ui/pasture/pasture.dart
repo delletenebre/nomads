@@ -19,68 +19,72 @@ class Pasture extends HookConsumerWidget {
     /// контроллер пастбища
     final pastureState = ref.watch(pastureProvider);
 
-    return AspectRatio(
-      aspectRatio: 1.0, // Чтобы поле всегда было квадратным
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.brown[100],
-          borderRadius: BorderRadius.circular(24),
-          // image: const DecorationImage(
-          //   image: AssetImage(
-          //     "assets/images/field_texture.png",
-          //   ), // Фоновая текстура земли
-          //   opacity: 0.2,
-          //   fit: BoxFit.cover,
-          // ),
+    return Container(
+      width: double.maxFinite,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/images/pasture1.png'),
+          fit: BoxFit.cover,
         ),
-        child: LayoutBuilder(
-          builder: (context, constrains) {
-            final cellSize = constrains.maxWidth / 3;
+      ),
+      child: Container(
+        constraints: BoxConstraints(maxWidth: 320),
+        padding: const EdgeInsets.all(12),
+        child: AspectRatio(
+          aspectRatio: 1.0,
+          child: LayoutBuilder(
+            builder: (context, constrains) {
+              final cellSize = constrains.maxWidth / 3;
 
-            return Stack(
-              children: [
-                Positioned(left: 0.0, top: 0.0, child: HexTile(size: cellSize)),
-                Positioned(
-                  left: cellSize,
-                  top: 0.0,
-                  child: HexTile(size: cellSize),
-                ),
-                Positioned(
-                  left: cellSize * 2,
-                  top: 0.0,
-                  child: HexTile(size: cellSize),
-                ),
+              return Stack(
+                children: [
+                  Positioned(
+                    left: 0.0,
+                    top: 0.0,
+                    child: HexTile(size: cellSize),
+                  ),
+                  Positioned(
+                    left: cellSize,
+                    top: 0.0,
+                    child: HexTile(size: cellSize),
+                  ),
+                  Positioned(
+                    left: cellSize * 2,
+                    top: 0.0,
+                    child: HexTile(size: cellSize),
+                  ),
 
-                Positioned(
-                  left: cellSize * 0.5,
-                  top: cellSize * 0.8,
-                  child: HexTile(size: cellSize),
-                ),
-                Positioned(
-                  left: (cellSize * 0.5) * 3,
-                  top: cellSize * 0.8,
-                  child: HexTile(size: cellSize),
-                ),
+                  Positioned(
+                    left: cellSize * 0.5,
+                    top: cellSize * 0.85,
+                    child: HexTile(size: cellSize),
+                  ),
+                  Positioned(
+                    left: (cellSize * 0.5) * 3,
+                    top: cellSize * 0.85,
+                    child: HexTile(size: cellSize),
+                  ),
 
-                Positioned(
-                  left: 0.0,
-                  top: cellSize * 2,
-                  child: HexTile(size: cellSize),
-                ),
-                Positioned(
-                  left: cellSize,
-                  top: cellSize * 2,
-                  child: HexTile(size: cellSize),
-                ),
-                Positioned(
-                  left: cellSize * 2,
-                  top: cellSize * 2,
-                  child: HexTile(size: cellSize),
-                ),
-              ],
-            );
-          },
+                  Positioned(
+                    left: 0.0,
+                    top: cellSize * 0.85 * 2,
+                    child: HexTile(size: cellSize),
+                  ),
+                  Positioned(
+                    left: cellSize,
+                    top: cellSize * 0.85 * 2,
+                    child: HexTile(size: cellSize),
+                  ),
+                  Positioned(
+                    left: cellSize * 2,
+                    top: cellSize * 0.85 * 2,
+                    child: HexTile(size: cellSize),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
         // child: GridView.builder(
         //   physics:

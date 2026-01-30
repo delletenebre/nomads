@@ -50,91 +50,109 @@ class HexTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Настройка формы шестиугольника
-    final hexagonShape = PolygonShapeBorder(
-      sides: 6,
-      cornerRadius: 10.toPercentLength,
-      cornerStyle: CornerStyle.rounded,
-    );
-
-    return Center(
-      child: Container(
-        width: size,
-        height: size,
-        // Используем Stack для размещения элементов внутри
-        child: Stack(
+    return CellDropZone(
+      willAcceptCard: (details) => true,
+      onCardDropped: (details) {},
+      onStatusChanged: (isAccepted, details) {},
+      builder: (context, isHovered, isAccepted) {
+        return Stack(
           alignment: Alignment.center,
           children: [
-            // 1. Нижний слой - Тень для объема
-            Container(
+            // --- СЛОЙ 1: ОСНОВА (Картинка + Черная обводка + Тень) ---
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              height: size,
+              width: size,
+              clipBehavior: Clip.antiAlias,
               decoration: ShapeDecoration(
-                shape: hexagonShape,
-                color: const Color(0xFF3B5B28), // Темно-зеленый для глубины
-              ),
-              margin: const EdgeInsets.only(top: 10), // Смещение тени вниз
-            ),
-
-            // 2. Основное тело плитки
-            Container(
-              decoration: ShapeDecoration(
-                shape: hexagonShape,
-                gradient: const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFFAED581), // Светло-зеленый верх
-                    Color(0xFF8BC34A), // Темнее низ
-                  ],
+                // Используем твою картинку
+                image: DecorationImage(
+                  image: AssetImage('assets/images/grass.png'),
+                  fit: BoxFit.cover,
+                ),
+                shape: StarBorder(
+                  // Тонкая черная граница по самому краю
+                  side: const BorderSide(color: Colors.black, width: 1.0),
+                  points: 3,
+                  innerRadiusRatio: 1.0,
+                  pointRounding: 0.05,
+                  valleyRounding: 0.05,
+                  rotation: 0.0,
+                  squash: 1.0,
                 ),
                 shadows: [
+                  // Тень под кнопкой
                   BoxShadow(
-                    color: Colors.black,
-                    blurRadius: 4,
-                    offset: const Offset(0, 10),
+                    color: const Color(0xff405924),
+                    offset: Offset(0.0, size * 0.06),
+                    blurRadius: 0.0,
                   ),
                 ],
               ),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                height: size,
+                width: size,
+                decoration: BoxDecoration(
+                  color: isHovered ? Colors.green.withAlpha(100) : null,
+                ),
+                child: // --- СЛОЙ 3: ТЕКСТ ---
+                const Center(
+                  child: Text(
+                    'Star',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
             ),
 
-            // 3. Содержимое (Индикаторы и декорации)
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Верхний прогресс-бар
-                  _buildProgressBar(0.7, width: 80),
-
-                  // Здесь могут быть ваши камни/цветы (картинки или иконки)
-                  const Spacer(),
-
-                  // Нижний блок с индикаторами
-                  Column(
-                    children: [
-                      _buildProgressBar(0.4, width: 60),
-                      const SizedBox(height: 5),
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.circle_outlined, size: 12),
-                          SizedBox(width: 4),
-                          Icon(
-                            Icons.circle_outlined,
-                            size: 16,
-                            color: Colors.black54,
-                          ),
-                          SizedBox(width: 4),
-                          Icon(Icons.circle_outlined, size: 12),
-                        ],
+            // --- СЛОЙ 2: ОБЪЕМНЫЙ БЛИК (ИСПРАВЛЕННЫЙ) ---
+            Positioned.fill(
+              child: Padding(
+                // Чуть отступаем внутрь, чтобы не закрывать черную рамку слоя 1
+                padding: const EdgeInsets.all(1.0),
+                child: ShaderMask(
+                  shaderCallback: (Rect bounds) {
+                    return LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.white.withAlpha(255), // Яркий блик сверху
+                        Colors.black.withAlpha(255), // Тень снизу
+                      ],
+                      // Где начинаются и заканчиваются цвета (0.0 - верх, 1.0 - низ)
+                      stops: const [0.0, 1.0],
+                    ).createShader(bounds);
+                  },
+                  blendMode: BlendMode.srcATop,
+                  child: DecoratedBox(
+                    decoration: ShapeDecoration(
+                      shape: StarBorder(
+                        // Эта обводка служит "холстом" для полупрозрачного градиента
+                        side: BorderSide(
+                          color: Colors.white.withAlpha(
+                            100,
+                          ), // Цвет не важен, его заменит маска
+                          width: size * 0.05, // Толщина блика (можно менять)
+                        ),
+                        points: 3,
+                        innerRadiusRatio: 1.0,
+                        pointRounding: 0.05,
+                        valleyRounding: 0.05,
+                        rotation: 0.0,
+                        squash: 1.0,
                       ),
-                    ],
+                    ),
                   ),
-                ],
+                ),
               ),
             ),
           ],
-        ),
-      ),
+        );
+      },
     );
   }
 

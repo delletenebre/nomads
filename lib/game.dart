@@ -50,7 +50,7 @@ class Game extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(width: 320.0, child: Pasture()),
+          Expanded(flex: 3, child: Pasture()),
           Expanded(
             child: GameHand(
               cards: [
