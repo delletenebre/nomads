@@ -16,23 +16,54 @@ class Game extends StatelessWidget {
       body: Column(
         children: [
           Expanded(
-            child: Container(
-              height: 200.0,
-              color: Colors.amber,
-              child: Row(
-                children: [
-                  GameCard(
-                    cardData: GameCardData(
-                      id: Ulid().toString(),
-                      playerId: '1',
-                      name: 'Sheep',
-                      // target: GameCardTarget.myTable,
-                      type: GameCardType.creature,
-                      weight: 1.0,
-                    ),
-                  ),
-                ],
-              ),
+            child: GameHand(
+              cards: [
+                CreatureCard(
+                  id: Ulid().toString(),
+                  playerId: '1',
+                  name: 'Sheep',
+                  creatureType: CreatureCardType.sheep,
+                  weight: 1.0,
+                ),
+                CreatureCard(
+                  id: Ulid().toString(),
+                  playerId: '1',
+                  name: 'Cow',
+                  creatureType: CreatureCardType.cow,
+                  weight: 2.0,
+                ),
+                CreatureCard(
+                  id: Ulid().toString(),
+                  playerId: '1',
+                  name: 'Camel',
+                  creatureType: CreatureCardType.camel,
+                  weight: 4.0,
+                ),
+                GameCardData(
+                  id: Ulid().toString(),
+                  playerId: '1',
+                  name: 'Fog',
+                  // target: GameCardTarget.opponentTable,
+                  // type: GameCardType.debuff,
+                  type: GameCardType.event,
+                  weight: 0.0,
+                ),
+                GameCardData(
+                  id: Ulid().toString(),
+                  playerId: '1',
+                  name: 'Sun',
+                  // target: GameCardTarget.myUnit,
+                  type: GameCardType.spell,
+                  weight: 1.0,
+                ),
+              ],
+              cardWidth: 100,
+              cardHeight: 100,
+              spacingFactor: 1.0,
+              focusedCardId: '',
+              hoveredCardId: '',
+              onCardTap: (String id) {},
+              onCardHover: (String id, bool isHover) {},
             ),
           ),
           Expanded(flex: 3, child: Pasture()),

@@ -1,5 +1,8 @@
+import 'dart:ui';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
 import '../../models/creature_card_data.dart';
 import '../../models/game_card_data.dart';
@@ -35,6 +38,7 @@ class HexTile<T extends Object> extends StatelessWidget {
       onStatusChanged: (isAccepted, details) {},
       builder: (context, isHovered, isAccepted) {
         return Stack(
+          clipBehavior: Clip.antiAlias,
           alignment: Alignment.center,
           children: [
             // --- СЛОЙ 1: ОСНОВА (Картинка + Черная обводка + Тень) ---
@@ -130,6 +134,7 @@ class HexTile<T extends Object> extends StatelessWidget {
                 width: sheepSize,
               );
               double imageSize = sheepSize;
+              String asset = 'assets/images/sheep.png';
 
               if (card is CreatureCard) {
                 imageSize = creatureSizes[card.creatureType]!;
@@ -137,6 +142,7 @@ class HexTile<T extends Object> extends StatelessWidget {
                   'assets/images/${card.creatureType.name}.png',
                   width: imageSize,
                 );
+                asset = 'assets/images/${card.creatureType.name}.png';
               }
 
               // 1. Grid Logic
@@ -161,15 +167,32 @@ class HexTile<T extends Object> extends StatelessWidget {
               return Positioned(
                 top: top,
                 left: left,
-                child: ColorFiltered(
-                  colorFilter: ColorFilter.mode(
-                    card.playerId == '2'
-                        ? Colors.transparent
-                        : Colors.red.withAlpha(100),
-                    BlendMode.srcATop,
+                // child: child,
+                child: SharpToSoftGlow(
+                  glowColor: card.playerId == '2'
+                      ? Colors.cyanAccent
+                      : Colors.red, // Яркий голубой
+                  softSpread: 8.0, // Широкое мягкое свечение
+                  sharpThickness: 1.5, // Тонкий четкий контур у тела
+                  child: Image.asset(
+                    asset, // Замените на ваш путь
+                    width: imageSize,
                   ),
-                  child: child,
                 ),
+                // GlowingAnimal(
+                //             size: imageSize,
+                //             glowColor: card.playerId == '2' ? Colors.green : Colors.red,
+                //             assetPath: asset,
+                //           ),
+                //           // child: ColorFiltered(
+                //   colorFilter: ColorFilter.mode(
+                //     card.playerId == '2'
+                //         ? Colors.transparent
+                //         : Colors.red.withAlpha(100),
+                //     BlendMode.srcATop,
+                //   ),
+                //   child: IsometricPulsingGlow(child: child),
+                // ),
               );
             }),
           ],
@@ -196,6 +219,298 @@ class HexTile<T extends Object> extends StatelessWidget {
           valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFC5E1A5)),
         ),
       ),
+    );
+  }
+}
+
+class IsometricLightGlow extends StatefulWidget {
+  final Widget child;
+  final Color color;
+  final double width; // Ширина пятна света (обычно чуть шире картинки)
+
+  const IsometricLightGlow({
+    super.key,
+    required this.child,
+    this.color = Colors.orangeAccent,
+    this.width = 120.0, // Подстройте под средний размер существа
+  });
+
+  @override
+  State<IsometricLightGlow> createState() => _IsometricLightGlowState();
+}
+
+class _IsometricLightGlowState extends State<IsometricLightGlow>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none, // Разрешаем свету выходить за рамки виджета
+      alignment: .bottomCenter, // Привязка к ногам
+      children: [
+        // СЛОЙ СВЕТА
+        Positioned(
+          // Смещаем чуть вниз, чтобы центр пятна был ровно под копытами
+          bottom: -10,
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              // Легкая пульсация размера и прозрачности
+              final scale = 1.0 + (_controller.value * 0.15);
+              final opacity = 0.6 + (_controller.value * 0.4);
+
+              return Transform(
+                alignment: Alignment.center,
+                // Магия изометрии: сильно сжимаем по вертикали (Y)
+                transform: Matrix4.identity()
+                  //..scale(scale, 0.35 * scale)
+                  ..rotateZ(1)
+                  ..rotateY(0.7),
+                child: Container(
+                  width: widget.width,
+                  height: widget.width,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        widget.color.withOpacity(opacity), // Центр (яркий)
+                        widget.color.withOpacity(0.0), // Край (прозрачный)
+                      ],
+                      stops: const [0.2, 1.0], // Мягкий переход
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+
+        // СЛОЙ СУЩЕСТВА
+        // Добавляем отступ, чтобы картинка не "стояла" на самом краю виджета
+        Padding(
+          padding: const EdgeInsets.only(bottom: 5.0),
+          child: widget.child,
+        ),
+      ],
+    );
+  }
+}
+
+class SimpleIsometricGlow extends StatefulWidget {
+  final Widget child;
+  final Color glowColor;
+
+  const SimpleIsometricGlow({
+    super.key,
+    required this.child,
+    this.glowColor = Colors.orangeAccent,
+  });
+
+  @override
+  State<SimpleIsometricGlow> createState() => _SimpleIsometricGlowState();
+}
+
+class _SimpleIsometricGlowState extends State<SimpleIsometricGlow>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // RepaintBoundary говорит Flutter'у кэшировать картинку существа,
+    // чтобы не перерисовывать её при каждом кадре анимации тени.
+    return RepaintBoundary(
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.bottomCenter,
+        children: [
+          // --- Свечение (Просто сплюснутый градиент) ---
+          Positioned(
+            bottom: 0, // Привязываем к низу
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                // Плавное изменение размера и прозрачности
+                final scale = 1.0 + (_controller.value * 0.2); // +20% к размеру
+                final opacity = 0.3 + (_controller.value * 0.4); // Мерцание
+
+                return Transform.translate(
+                  offset: const Offset(0, 5), // Чуть сдвигаем вниз визуально
+                  child: Container(
+                    // Ширина фиксированная, высота сжатая (изометрия)
+                    width: 140.0 * scale,
+                    height: 40.0 * scale, // 40/140 = ~0.28 (плоский овал)
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        colors: [
+                          widget.glowColor.withOpacity(opacity), // Центр
+                          widget.glowColor.withOpacity(0.0), // Край
+                        ],
+                        // Делаем центр градиента чуть мягче
+                        stops: const [0.2, 1.0],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+
+          // --- Само существо ---
+          Padding(
+            padding: const EdgeInsets.only(
+              bottom: 10,
+            ), // Приподнимаем над пятном
+            child: widget.child,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class GlowingAnimal extends StatelessWidget {
+  final String assetPath;
+  final Color glowColor;
+  final double size;
+
+  const GlowingAnimal({
+    Key? key,
+    required this.assetPath,
+    this.glowColor = Colors.red, // Цвет свечения
+    this.size = 100.0,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.antiAlias,
+      alignment: .center,
+      children: [
+        // --- Слой Свечения (Задний план) ---
+        Positioned(
+          // Сдвигаем свечение чуть вниз или оставляем по центру
+          top: 0,
+          child: ImageFiltered(
+            // Размытие краев
+            imageFilter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: ColorFiltered(
+              // srcIn перекрашивает только сам объект, игнорируя прозрачный фон
+              colorFilter: ColorFilter.mode(glowColor, BlendMode.srcIn),
+              child: Image.asset(
+                assetPath,
+                width: size * 1, // Укажите ваши размеры
+                height: size * 1,
+              ),
+            ),
+          ),
+        ),
+
+        // --- Слой Оригинала (Передний план) ---
+        Image.asset(assetPath, width: size, height: size),
+      ],
+    );
+  }
+}
+
+class SharpToSoftGlow extends StatelessWidget {
+  /// Виджет, который нужно подсветить (обычно Image.asset)
+  final Widget child;
+
+  /// Цвет свечения
+  final Color glowColor;
+
+  /// Насколько далеко распространяется мягкое свечение (радиус размытия дальнего слоя)
+  final double softSpread;
+
+  /// Толщина "четкого" контура (радиус размытия ближнего слоя)
+  final double sharpThickness;
+
+  const SharpToSoftGlow({
+    Key? key,
+    required this.child,
+    required this.glowColor,
+    this.softSpread = 12.0, // Значение по умолчанию для мягкого свечения
+    this.sharpThickness = 2.0, // Значение по умолчанию для четкого контура
+  }) : super(key: key);
+
+  // Вспомогательная функция для создания закрашенной копии
+  Widget _buildColoredCopy(Color color) {
+    return ColorFiltered(
+      // Режим srcIn закрашивает только непрозрачные пиксели изображения
+      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+      child: child,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      clipBehavior:
+          Clip.none, // Важно, чтобы свечение не обрезалось контейнером
+      children: [
+        // --- СЛОЙ 1: Дальнее Мягкое Свечение (Задний план) ---
+        Positioned(
+          // Небольшие смещения, чтобы компенсировать визуальное уменьшение при сильном блюре
+          top: softSpread / 4,
+          left: softSpread / 4,
+          right: -softSpread / 4,
+          bottom: -softSpread / 4,
+          child: ImageFiltered(
+            imageFilter: ImageFilter.blur(
+              sigmaX: softSpread,
+              sigmaY: softSpread,
+            ),
+            // Делаем дальний свет полупрозрачным (например, 50% opacity)
+            child: _buildColoredCopy(glowColor.withOpacity(0.5)),
+          ),
+        ),
+
+        // --- СЛОЙ 2: Четкий Контур (Средний план) ---
+        // Очень маленький блюр создает эффект четкой обводки
+        ImageFiltered(
+          imageFilter: ImageFilter.blur(
+            sigmaX: sharpThickness,
+            sigmaY: sharpThickness,
+          ),
+          // Этот слой должен быть ярким и непрозрачным
+          child: _buildColoredCopy(glowColor),
+        ),
+
+        // --- СЛОЙ 3: Оригинал (Передний план) ---
+        child,
+      ],
     );
   }
 }
