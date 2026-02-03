@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -31,6 +33,9 @@ class GameHand extends HookWidget {
     final containerWidth = MediaQuery.of(context).size.width;
 
     final hoveredCardId = useState<String?>(null);
+    final rotateAngleFactor = useMemoized(
+      () => (Random().nextDouble() * 0.2 - 0.1),
+    );
 
     List<Widget> standardCards = [];
     Widget? activeCardWidget;
@@ -44,15 +49,17 @@ class GameHand extends HookWidget {
       final centerIndex = (total - 1) / 2;
       final offsetFromCenter = index - centerIndex;
 
-      final double spacingX = cardWidth * spacingFactor;
-      final double translateX = offsetFromCenter * spacingX;
-      final double translateY = offsetFromCenter.abs() * (cardWidth * 0.12);
+      final spacingX = cardWidth * spacingFactor;
+      final translateX = offsetFromCenter * spacingX;
+      // final translateY = offsetFromCenter.abs() * (cardWidth * 0.12);
 
-      final double leftPos =
-          (containerWidth / 2) + translateX - (cardWidth / 2);
-      final double bottomPos = -translateY + 20;
+      final leftPos = (containerWidth / 2) + translateX - (cardWidth / 2);
+      final bottomPos = cardHeight / 8; //-translateY + 20;
 
-      final double rotationAngle = isActive ? 0.0 : offsetFromCenter * 0.1;
+      final maxAngle = 0.125;
+      final rotationAngle = isActive
+          ? 0.0
+          : Random(card.hashCode).nextDouble() * (maxAngle * 2) - maxAngle;
 
       final cardWidget = AnimatedPositioned(
         key: ValueKey(card.id),
@@ -60,6 +67,7 @@ class GameHand extends HookWidget {
         curve: Curves.easeOutCubic,
         left: leftPos,
         bottom: bottomPos,
+        // bottom: bottomPos,
         child: MouseRegion(
           hitTestBehavior: HitTestBehavior.opaque,
           onEnter: (event) {
