@@ -15,6 +15,7 @@ class GameHand extends HookWidget {
   final String? hoveredCardId;
   final Function(String id) onCardTap;
   final Function(String id, bool isHover) onCardHover;
+  final bool isInteractive;
 
   const GameHand({
     super.key,
@@ -26,6 +27,7 @@ class GameHand extends HookWidget {
     required this.hoveredCardId,
     required this.onCardTap,
     required this.onCardHover,
+    this.isInteractive = true, // Default to true for existing usage
   });
 
   @override
@@ -68,24 +70,27 @@ class GameHand extends HookWidget {
         left: leftPos,
         bottom: bottomPos,
         // bottom: bottomPos,
-        child: MouseRegion(
-          hitTestBehavior: HitTestBehavior.opaque,
-          onEnter: (event) {
-            hoveredCardId.value = card.id;
-            onCardHover(card.id, true);
-          },
-          onExit: (event) {
-            if (hoveredCardId.value == card.id) {
-              hoveredCardId.value = null;
-            }
-            onCardHover(card.id, false);
-          },
-          child: GestureDetector(
-            onTap: () => onCardTap(card.id),
-            child: GameCard(
-              cardData: card,
-              rotationAngle: rotationAngle,
-              isActive: isActive,
+        child: IgnorePointer(
+          ignoring: !isInteractive,
+          child: MouseRegion(
+            hitTestBehavior: HitTestBehavior.opaque,
+            onEnter: (event) {
+              hoveredCardId.value = card.id;
+              onCardHover(card.id, true);
+            },
+            onExit: (event) {
+              if (hoveredCardId.value == card.id) {
+                hoveredCardId.value = null;
+              }
+              onCardHover(card.id, false);
+            },
+            child: GestureDetector(
+              onTap: () => onCardTap(card.id),
+              child: GameCard(
+                cardData: card,
+                rotationAngle: rotationAngle,
+                isActive: isActive,
+              ),
             ),
           ),
         ),

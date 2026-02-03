@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:ulid/ulid.dart';
 
+import 'controllers/pasture/game_provider.dart';
 import 'models/creature_card_data.dart';
 import 'models/game_card_data.dart';
 import 'ui/game_cards/game_card.dart';
 import 'ui/game_hand/game_hand.dart';
 import 'ui/pasture/pasture.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class Game extends StatelessWidget {
+class Game extends ConsumerWidget {
   const Game({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: Column(
         children: [
@@ -64,6 +66,7 @@ class Game extends StatelessWidget {
               hoveredCardId: '',
               onCardTap: (String id) {},
               onCardHover: (String id, bool isHover) {},
+              isInteractive: ref.watch(gameProvider).currentPlayerId == '1',
             ),
           ),
           Expanded(flex: 3, child: Pasture()),
@@ -116,6 +119,18 @@ class Game extends StatelessWidget {
               hoveredCardId: '',
               onCardTap: (String id) {},
               onCardHover: (String id, bool isHover) {},
+              isInteractive: ref.watch(gameProvider).currentPlayerId == '2',
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              onPressed: () {
+                ref.read(gameProvider.notifier).endTurn();
+              },
+              child: Text(
+                'End Turn (Current: Player ${ref.watch(gameProvider).currentPlayerId})',
+              ),
             ),
           ),
         ],
