@@ -12,12 +12,14 @@ class HexTile<T extends Object> extends StatelessWidget {
   final void Function(T) onCardDropped;
   final List<GameCardData> cards;
   final double size;
+  final bool Function(DragTargetDetails<T> details)? willAcceptCard;
 
   const HexTile({
     super.key,
     required this.size,
     this.cards = const [],
     required this.onCardDropped,
+    this.willAcceptCard,
   });
 
   @override
@@ -31,7 +33,7 @@ class HexTile<T extends Object> extends StatelessWidget {
       CreatureCardType.camel: size * 0.5,
     };
     return CellDropZone<T>(
-      willAcceptCard: (details) => true,
+      willAcceptCard: willAcceptCard ?? (details) => true,
       onCardDropped: (details) {
         onCardDropped.call(details.data);
       },

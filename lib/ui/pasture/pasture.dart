@@ -2,7 +2,9 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../../controllers/deck_provider.dart';
 import '../../controllers/pasture/pasture_provider.dart';
+import '../../controllers/pasture/game_provider.dart';
 import '../../models/game_card_data.dart';
 import '../effects/fog_overlay.dart';
 
@@ -75,10 +77,18 @@ class Pasture extends HookConsumerWidget {
                       child: HexTile<GameCardData>(
                         size: cellSize,
                         cards: pastureState[index].cards,
+                        willAcceptCard: (details) =>
+                            details.data.type == GameCardType.creature,
                         onCardDropped: (card) {
-                          ref
-                              .watch(pastureProvider.notifier)
+                          final success = ref
+                              .read(pastureProvider.notifier)
                               .addCard(index, card);
+                          if (success) {
+                            ref
+                                .read(deckProvider.notifier)
+                                .removeCardFromHand(card);
+                            ref.read(gameProvider.notifier).endTurn();
+                          }
                         },
                       ),
                     );

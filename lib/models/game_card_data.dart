@@ -30,7 +30,7 @@ enum GameCardType {
 
 class GameCardData {
   final String id;
-  final String playerId;
+  String playerId;
   final String name;
   // final GameCardTarget target;
   final GameCardType type;

@@ -12,7 +12,7 @@ class PastureNotifier extends Notifier<List<PastureCell>> {
   List<PastureCell> build() => List.generate(8, (_) => PastureCell(cards: []));
 
   // Добавление животного в ячейку
-  void addCard(int index, GameCardData newCard) {
+  bool addCard(int index, GameCardData newCard) {
     final cell = state[index];
     final updatedAnimals = List<GameCardData>.from(cell.cards);
 
@@ -29,7 +29,7 @@ class PastureNotifier extends Notifier<List<PastureCell>> {
         updatedAnimals.add(newCard);
       } else {
         // Если новое животное слабее всех, оно не может зайти (или возвращается в руку)
-        return;
+        return false;
       }
     } else {
       updatedAnimals.add(newCard);
@@ -39,6 +39,7 @@ class PastureNotifier extends Notifier<List<PastureCell>> {
       for (int i = 0; i < state.length; i++)
         if (i == index) cell.copyWith(cards: updatedAnimals) else state[i],
     ];
+    return true;
   }
 
   // Проверка формации "Аркан" (3 в ряд) для конкретного игрока
