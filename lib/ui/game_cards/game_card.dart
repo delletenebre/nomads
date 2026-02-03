@@ -36,9 +36,9 @@ class GameCard extends HookWidget {
           newTilt = newTilt.clamp(-0.4, 0.4);
           tiltNotifier.value = newTilt;
           offset.value += details.delta;
-          debugPrint(
-            '[GameCard] onDragUpdate ${offset.value} with delta: ${details.delta}',
-          );
+          // debugPrint(
+          //   '[GameCard] onDragUpdate ${offset.value} with delta: ${details.delta}',
+          // );
         },
         onDragEnd: (details) {
           debugPrint(
